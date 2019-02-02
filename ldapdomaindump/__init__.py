@@ -412,12 +412,14 @@ class domainDumper(object):
         self.trusts = self.getTrusts()
         rw = reportWriter(self.config)
         rw.generateUsersReport(self)
-        rw.generateGroupsReport(self)
+        if not self.config.minimal:
+            rw.generateGroupsReport(self)
         rw.generateComputersReport(self)
         rw.generatePolicyReport(self)
         rw.generateTrustsReport(self)
         rw.generateComputersByOsReport(self)
-        rw.generateUsersByGroupReport(self)
+        if not self.config.minimal:
+            rw.generateUsersByGroupReport(self)
 
 class reportWriter(object):
     def __init__(self, config):
@@ -856,7 +858,8 @@ def main():
     miscgroup = parser.add_argument_group("Misc options")
     miscgroup.add_argument("-r", "--resolve", action='store_true', help="Resolve computer hostnames (might take a while and cause high traffic on large networks)")
     miscgroup.add_argument("-n", "--dns-server", help="Use custom DNS resolver instead of system DNS (try a domain controller IP)")
-    miscgroup.add_argument("-m", "--minimal", action='store_true', default=False, help="Only query minimal set of attributes to limit memmory usage")
+    miscgroup.add_argument("-m", "--minimal", action='store_true',
+                           default=False, help="Only query minimal set of attributes and skip group reports to limit memmory usage")
 
     args = parser.parse_args()
     #Create default config
